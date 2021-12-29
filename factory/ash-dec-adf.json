@@ -1,0 +1,9 @@
+{
+	"name": "ash-dec-adf",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "98c8b489-b7f0-4396-bce4-910f3f1d0139",
+		"tenantId": "33436334-68c8-43af-ac2f-ae58a97b3253"
+	}
+}

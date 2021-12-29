@@ -1,13 +1,13 @@
 {
 	"name": "RestService1",
-	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "RestService",
 		"typeProperties": {
-			"url": "https://reqres.in/api/users?page=1",
+			"url": "@concat('https://app.billbee.io/api/v1/products?page=',string(variables('start_page')),'&pageSize=250')",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
 }

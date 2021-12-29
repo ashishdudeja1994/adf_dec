@@ -69,7 +69,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@equals(int(activity('Web1').output.Paging.Page),2)",
+									"value": "@equals(int(activity('Web1').output.Paging.Page),3)",
 									"type": "Expression"
 								},
 								"ifFalseActivities": [

@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "RestService",
 		"typeProperties": {
-			"url": "@concat('https://app.billbee.io/api/v1/products?page=',string(variables('start_page')),'&pageSize=250')",
+			"url": "'https://app.billbee.io/api'",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}

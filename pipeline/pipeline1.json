@@ -76,7 +76,14 @@
 									{
 										"name": "Wait1",
 										"type": "Wait",
-										"dependsOn": [],
+										"dependsOn": [
+											{
+												"activity": "Copy data1",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
 										"userProperties": [],
 										"typeProperties": {
 											"waitTimeInSeconds": 5
@@ -121,6 +128,67 @@
 												"type": "Expression"
 											}
 										}
+									},
+									{
+										"name": "Copy data1",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "RestSource",
+												"httpRequestTimeout": "00:01:40",
+												"requestInterval": "00.00:00:00.010",
+												"requestMethod": "GET",
+												"additionalHeaders": {
+													"X-Billbee-Api-Key": "91364585-8561-4573-B322-F6E4F66FCCD4"
+												},
+												"paginationRules": {
+													"supportRFC5988": "true"
+												}
+											},
+											"sink": {
+												"type": "JsonSink",
+												"storeSettings": {
+													"type": "AzureBlobStorageWriteSettings"
+												},
+												"formatSettings": {
+													"type": "JsonWriteSettings"
+												}
+											},
+											"enableStaging": false
+										},
+										"inputs": [
+											{
+												"referenceName": "RestResource1",
+												"type": "DatasetReference",
+												"parameters": {
+													"queryParam": {
+														"value": "@concat('products?page=',string(variables('start_page')),'&pageSize=250')",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "Json1",
+												"type": "DatasetReference",
+												"parameters": {
+													"fileName": {
+														"value": "APIPage@{string(variables('start_page'))}.json",
+														"type": "Expression"
+													}
+												}
+											}
+										]
 									}
 								],
 								"ifTrueActivities": [

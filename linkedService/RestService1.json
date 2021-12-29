@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "RestService",
 		"typeProperties": {
-			"url": "https://app.billbee.io/api",
+			"url": "https://app.billbee.io/api/v1/products",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}

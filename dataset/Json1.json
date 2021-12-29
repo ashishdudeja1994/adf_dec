@@ -1,0 +1,168 @@
+{
+	"name": "Json1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorageADF",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "json-storage"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"page": {
+					"type": "integer"
+				},
+				"pageSize": {
+					"type": "integer"
+				},
+				"num": {
+					"type": "integer"
+				},
+				"isLastPage": {
+					"type": "boolean"
+				},
+				"data": {
+					"type": "object",
+					"properties": {
+						"CICD": {
+							"type": "object",
+							"properties": {
+								"pacman": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"prId": {
+												"type": "integer"
+											},
+											"latestScanTime": {
+												"type": "string"
+											},
+											"leakingCount": {
+												"type": "integer"
+											}
+										}
+									}
+								},
+								"jasc": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"prId": {
+												"type": "integer"
+											},
+											"latestScanTime": {
+												"type": "string"
+											},
+											"leakingCount": {
+												"type": "integer"
+											}
+										}
+									}
+								}
+							}
+						},
+						"CATS": {
+							"type": "object",
+							"properties": {
+								"testapi": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"prId": {
+												"type": "integer"
+											},
+											"latestScanTime": {
+												"type": "string"
+											},
+											"leakingCount": {
+												"type": "integer"
+											}
+										}
+									}
+								},
+								"environments": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"prId": {
+												"type": "integer"
+											},
+											"latestScanTime": {
+												"type": "string"
+											},
+											"leakingCount": {
+												"type": "integer"
+											}
+										}
+									}
+								},
+								"tools": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"prId": {
+												"type": "integer"
+											},
+											"latestScanTime": {
+												"type": "string"
+											},
+											"leakingCount": {
+												"type": "integer"
+											}
+										}
+									}
+								},
+								"common": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"prId": {
+												"type": "integer"
+											},
+											"latestScanTime": {
+												"type": "string"
+											},
+											"leakingCount": {
+												"type": "integer"
+											}
+										}
+									}
+								},
+								"regression": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"prId": {
+												"type": "integer"
+											},
+											"latestScanTime": {
+												"type": "string"
+											},
+											"leakingCount": {
+												"type": "integer"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

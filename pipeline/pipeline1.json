@@ -243,7 +243,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "Json1",
+						"referenceName": "JsonFolder",
 						"type": "DatasetReference"
 					},
 					"fieldList": [

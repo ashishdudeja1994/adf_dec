@@ -34,10 +34,25 @@
 							"userProperties": [],
 							"typeProperties": {
 								"url": {
-									"value": "@concat('https://reqres.in/api/users?page=',string(variables('start_page')))",
+									"value": "@concat('https://app.billbee.io/api/v1/products?page=',string(variables('start_page')),'&pageSize=250')",
 									"type": "Expression"
 								},
-								"method": "GET"
+								"method": "GET",
+								"headers": {
+									"X-Billbee-Api-Key": "91364585-8561-4573-B322-F6E4F66FCCD4"
+								},
+								"authentication": {
+									"type": "Basic",
+									"username": "info@emg-technic.de",
+									"password": {
+										"type": "AzureKeyVaultSecret",
+										"store": {
+											"referenceName": "AzureKeyVaultADF4",
+											"type": "LinkedServiceReference"
+										},
+										"secretName": "bilbee-key"
+									}
+								}
 							}
 						},
 						{
@@ -54,7 +69,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@equals(int(activity('Web1').output.page),2)",
+									"value": "@equals(int(activity('Web1').output.Paging.Page),2)",
 									"type": "Expression"
 								},
 								"ifFalseActivities": [

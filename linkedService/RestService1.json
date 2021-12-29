@@ -6,7 +6,16 @@
 		"typeProperties": {
 			"url": "https://app.billbee.io/api/v1",
 			"enableServerCertificateValidation": true,
-			"authenticationType": "Anonymous"
+			"authenticationType": "Basic",
+			"userName": "info@emg-technic.de",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVaultADF4",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "bilbee-key"
+			}
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/linkedservices"

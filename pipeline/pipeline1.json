@@ -69,32 +69,16 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@equals(int(activity('Web1').output.Paging.Page),2)",
+									"value": "@equals(int(activity('Web1').output.Paging.Page),3)",
 									"type": "Expression"
 								},
 								"ifFalseActivities": [
-									{
-										"name": "Wait1",
-										"type": "Wait",
-										"dependsOn": [
-											{
-												"activity": "Copy data1",
-												"dependencyConditions": [
-													"Succeeded"
-												]
-											}
-										],
-										"userProperties": [],
-										"typeProperties": {
-											"waitTimeInSeconds": 5
-										}
-									},
 									{
 										"name": "Set variable3",
 										"type": "SetVariable",
 										"dependsOn": [
 											{
-												"activity": "Wait1",
+												"activity": "Loop Copy Data",
 												"dependencyConditions": [
 													"Succeeded"
 												]
@@ -130,7 +114,7 @@
 										}
 									},
 									{
-										"name": "Copy data1",
+										"name": "Loop Copy Data",
 										"type": "Copy",
 										"dependsOn": [],
 										"policy": {
@@ -197,7 +181,7 @@
 										"type": "SetVariable",
 										"dependsOn": [
 											{
-												"activity": "Copy data1_copy1",
+												"activity": "Final Copy Data",
 												"dependencyConditions": [
 													"Succeeded"
 												]
@@ -210,7 +194,7 @@
 										}
 									},
 									{
-										"name": "Copy data1_copy1",
+										"name": "Final Copy Data",
 										"type": "Copy",
 										"dependsOn": [],
 										"policy": {
@@ -319,11 +303,49 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
 						"type": "JsonReadSettings"
 					}
+				}
+			},
+			{
+				"name": "adf_json_to_csv",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Until1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/ashishdudeja1994@gmail.com/adf_json_to_csv",
+					"baseParameters": {
+						"start_page_no": {
+							"value": "@string(add(length(activity('Get Metadata1').output.childItems),1))",
+							"type": "Expression"
+						},
+						"last_page_no": {
+							"value": "@variables('index_value')",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricksADF",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],

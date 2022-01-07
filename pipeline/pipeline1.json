@@ -5,14 +5,7 @@
 			{
 				"name": "Until1",
 				"type": "Until",
-				"dependsOn": [
-					{
-						"activity": "Set variable2",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
@@ -69,7 +62,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@equals(int(activity('Web1').output.Paging.Page),3)",
+									"value": "@equals(int(activity('Web1').output.Paging.Page),2)",
 									"type": "Expression"
 								},
 								"ifFalseActivities": [
@@ -181,7 +174,7 @@
 										"type": "SetVariable",
 										"dependsOn": [
 											{
-												"activity": "Final Copy Data",
+												"activity": "adf_json_to_csv",
 												"dependencyConditions": [
 													"Succeeded"
 												]
@@ -253,6 +246,43 @@
 												}
 											}
 										]
+									},
+									{
+										"name": "adf_json_to_csv",
+										"type": "DatabricksNotebook",
+										"dependsOn": [
+											{
+												"activity": "Final Copy Data",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"notebookPath": "/Users/ashishdudeja1994@gmail.com/adf_json_to_csv",
+											"baseParameters": {
+												"start_page_no": {
+													"value": "@string(add(length(activity('Get Metadata1').output.childItems),1))",
+													"type": "Expression"
+												},
+												"last_page_no": {
+													"value": "@variables('start_page')",
+													"type": "Expression"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "AzureDatabricksADF",
+											"type": "LinkedServiceReference"
+										}
 									}
 								]
 							}
@@ -312,11 +342,18 @@
 				}
 			},
 			{
-				"name": "adf_json_to_csv",
-				"type": "DatabricksNotebook",
+				"name": "Set variable5",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": []
+			},
+			{
+				"name": "Check last page - 1 True",
+				"description": "if last page value is true set last page variable for until loop to true",
+				"type": "WebActivity",
 				"dependsOn": [
 					{
-						"activity": "Until1",
+						"activity": "Set variable2",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -331,21 +368,26 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebookPath": "/Users/ashishdudeja1994@gmail.com/adf_json_to_csv",
-					"baseParameters": {
-						"start_page_no": {
-							"value": "@string(add(length(activity('Get Metadata1').output.childItems),1))",
-							"type": "Expression"
-						},
-						"last_page_no": {
-							"value": "@variables('index_value')",
-							"type": "Expression"
+					"url": {
+						"value": "@concat('https://app.billbee.io/api/v1/products?page=',string(sub(int(string(variables('start_page'))),1)),'&pageSize=250')",
+						"type": "Expression"
+					},
+					"method": "GET",
+					"headers": {
+						"X-Billbee-Api-Key": "91364585-8561-4573-B322-F6E4F66FCCD4"
+					},
+					"authentication": {
+						"type": "Basic",
+						"username": "info@emg-technic.de",
+						"password": {
+							"type": "AzureKeyVaultSecret",
+							"store": {
+								"referenceName": "AzureKeyVaultADF4",
+								"type": "LinkedServiceReference"
+							},
+							"secretName": "bilbee-key"
 						}
 					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricksADF",
-					"type": "LinkedServiceReference"
 				}
 			}
 		],

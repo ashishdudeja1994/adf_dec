@@ -114,302 +114,6 @@
 					},
 					"ifFalseActivities": [
 						{
-							"name": "Until1",
-							"type": "Until",
-							"dependsOn": [
-								{
-									"activity": "last page -1 islastpage true set last_page to False",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"userProperties": [],
-							"typeProperties": {
-								"expression": {
-									"value": "@bool(variables('last_page'))",
-									"type": "Expression"
-								},
-								"activities": [
-									{
-										"name": "Web1",
-										"type": "WebActivity",
-										"dependsOn": [],
-										"policy": {
-											"timeout": "7.00:00:00",
-											"retry": 0,
-											"retryIntervalInSeconds": 30,
-											"secureOutput": false,
-											"secureInput": false
-										},
-										"userProperties": [],
-										"typeProperties": {
-											"url": {
-												"value": "@concat('https://app.billbee.io/api/v1/products?page=',string(variables('start_page')),'&pageSize=250')",
-												"type": "Expression"
-											},
-											"method": "GET",
-											"headers": {
-												"X-Billbee-Api-Key": "91364585-8561-4573-B322-F6E4F66FCCD4"
-											},
-											"authentication": {
-												"type": "Basic",
-												"username": "info@emg-technic.de",
-												"password": {
-													"type": "AzureKeyVaultSecret",
-													"store": {
-														"referenceName": "AzureKeyVaultADF4",
-														"type": "LinkedServiceReference"
-													},
-													"secretName": "bilbee-key"
-												}
-											}
-										}
-									},
-									{
-										"name": "If Condition1",
-										"type": "IfCondition",
-										"dependsOn": [
-											{
-												"activity": "Web1",
-												"dependencyConditions": [
-													"Succeeded"
-												]
-											}
-										],
-										"userProperties": [],
-										"typeProperties": {
-											"expression": {
-												"value": "@equals(int(activity('Web1').output.Paging.Page),2)",
-												"type": "Expression"
-											},
-											"ifFalseActivities": [
-												{
-													"name": "Set variable3",
-													"type": "SetVariable",
-													"dependsOn": [
-														{
-															"activity": "Loop Copy Data",
-															"dependencyConditions": [
-																"Succeeded"
-															]
-														}
-													],
-													"userProperties": [],
-													"typeProperties": {
-														"variableName": "index_value",
-														"value": {
-															"value": "@string(add(int(variables('start_page')),1))",
-															"type": "Expression"
-														}
-													}
-												},
-												{
-													"name": "Set variable4",
-													"type": "SetVariable",
-													"dependsOn": [
-														{
-															"activity": "Set variable3",
-															"dependencyConditions": [
-																"Succeeded"
-															]
-														}
-													],
-													"userProperties": [],
-													"typeProperties": {
-														"variableName": "start_page",
-														"value": {
-															"value": "@variables('index_value')",
-															"type": "Expression"
-														}
-													}
-												},
-												{
-													"name": "Loop Copy Data",
-													"type": "Copy",
-													"dependsOn": [],
-													"policy": {
-														"timeout": "7.00:00:00",
-														"retry": 0,
-														"retryIntervalInSeconds": 30,
-														"secureOutput": false,
-														"secureInput": false
-													},
-													"userProperties": [],
-													"typeProperties": {
-														"source": {
-															"type": "RestSource",
-															"httpRequestTimeout": "00:01:40",
-															"requestInterval": "00.00:00:00.010",
-															"requestMethod": "GET",
-															"additionalHeaders": {
-																"X-Billbee-Api-Key": "91364585-8561-4573-B322-F6E4F66FCCD4"
-															},
-															"paginationRules": {
-																"supportRFC5988": "true"
-															}
-														},
-														"sink": {
-															"type": "JsonSink",
-															"storeSettings": {
-																"type": "AzureBlobStorageWriteSettings"
-															},
-															"formatSettings": {
-																"type": "JsonWriteSettings"
-															}
-														},
-														"enableStaging": false
-													},
-													"inputs": [
-														{
-															"referenceName": "RestResource1",
-															"type": "DatasetReference",
-															"parameters": {
-																"queryParam": {
-																	"value": "@concat('products?page=',string(variables('start_page')),'&pageSize=250')",
-																	"type": "Expression"
-																}
-															}
-														}
-													],
-													"outputs": [
-														{
-															"referenceName": "Json1",
-															"type": "DatasetReference",
-															"parameters": {
-																"fileName": {
-																	"value": "APIPage@{string(variables('start_page'))}.json",
-																	"type": "Expression"
-																}
-															}
-														}
-													]
-												}
-											],
-											"ifTrueActivities": [
-												{
-													"name": "Set variable1",
-													"type": "SetVariable",
-													"dependsOn": [
-														{
-															"activity": "adf_json_to_csv",
-															"dependencyConditions": [
-																"Succeeded"
-															]
-														}
-													],
-													"userProperties": [],
-													"typeProperties": {
-														"variableName": "last_page",
-														"value": "true"
-													}
-												},
-												{
-													"name": "Final Copy Data",
-													"type": "Copy",
-													"dependsOn": [],
-													"policy": {
-														"timeout": "7.00:00:00",
-														"retry": 0,
-														"retryIntervalInSeconds": 30,
-														"secureOutput": false,
-														"secureInput": false
-													},
-													"userProperties": [],
-													"typeProperties": {
-														"source": {
-															"type": "RestSource",
-															"httpRequestTimeout": "00:01:40",
-															"requestInterval": "00.00:00:00.010",
-															"requestMethod": "GET",
-															"additionalHeaders": {
-																"X-Billbee-Api-Key": "91364585-8561-4573-B322-F6E4F66FCCD4"
-															},
-															"paginationRules": {
-																"supportRFC5988": "true"
-															}
-														},
-														"sink": {
-															"type": "JsonSink",
-															"storeSettings": {
-																"type": "AzureBlobStorageWriteSettings"
-															},
-															"formatSettings": {
-																"type": "JsonWriteSettings"
-															}
-														},
-														"enableStaging": false
-													},
-													"inputs": [
-														{
-															"referenceName": "RestResource1",
-															"type": "DatasetReference",
-															"parameters": {
-																"queryParam": {
-																	"value": "@concat('products?page=',string(variables('start_page')),'&pageSize=250')",
-																	"type": "Expression"
-																}
-															}
-														}
-													],
-													"outputs": [
-														{
-															"referenceName": "Json1",
-															"type": "DatasetReference",
-															"parameters": {
-																"fileName": {
-																	"value": "APIPage@{string(variables('start_page'))}.json",
-																	"type": "Expression"
-																}
-															}
-														}
-													]
-												},
-												{
-													"name": "adf_json_to_csv",
-													"type": "DatabricksNotebook",
-													"dependsOn": [
-														{
-															"activity": "Final Copy Data",
-															"dependencyConditions": [
-																"Succeeded"
-															]
-														}
-													],
-													"policy": {
-														"timeout": "7.00:00:00",
-														"retry": 0,
-														"retryIntervalInSeconds": 30,
-														"secureOutput": false,
-														"secureInput": false
-													},
-													"userProperties": [],
-													"typeProperties": {
-														"notebookPath": "/Users/ashishdudeja1994@gmail.com/adf_json_to_csv",
-														"baseParameters": {
-															"start_page_no": {
-																"value": "@string(add(length(activity('Get Metadata1').output.childItems),1))",
-																"type": "Expression"
-															},
-															"last_page_no": {
-																"value": "@variables('start_page')",
-																"type": "Expression"
-															}
-														}
-													},
-													"linkedServiceName": {
-														"referenceName": "AzureDatabricksADF",
-														"type": "LinkedServiceReference"
-													}
-												}
-											]
-										}
-									}
-								],
-								"timeout": "0.3:00:00"
-							}
-						},
-						{
 							"name": "last page -1 islastpage true set last_page to False",
 							"description": "last page -1 islastpage true then set last_page for until variable to false",
 							"type": "SetVariable",
@@ -432,8 +136,321 @@
 								"variableName": "last_page",
 								"value": "true"
 							}
+						},
+						{
+							"name": "Fail1",
+							"type": "Fail",
+							"dependsOn": [
+								{
+									"activity": "last page -1 islastpage true set last_page to True",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "Last Page -1 was true",
+								"errorCode": "1"
+							}
 						}
 					]
+				}
+			},
+			{
+				"name": "Until1",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "If Condition2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@bool(variables('last_page'))",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Web1",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": {
+									"value": "@concat('https://app.billbee.io/api/v1/products?page=',string(variables('start_page')),'&pageSize=250')",
+									"type": "Expression"
+								},
+								"method": "GET",
+								"headers": {
+									"X-Billbee-Api-Key": "91364585-8561-4573-B322-F6E4F66FCCD4"
+								},
+								"authentication": {
+									"type": "Basic",
+									"username": "info@emg-technic.de",
+									"password": {
+										"type": "AzureKeyVaultSecret",
+										"store": {
+											"referenceName": "AzureKeyVaultADF4",
+											"type": "LinkedServiceReference"
+										},
+										"secretName": "bilbee-key"
+									}
+								}
+							}
+						},
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "Web1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@equals(int(activity('Web1').output.Paging.Page),2)",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Set variable3",
+										"type": "SetVariable",
+										"dependsOn": [
+											{
+												"activity": "Loop Copy Data",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "index_value",
+											"value": {
+												"value": "@string(add(int(variables('start_page')),1))",
+												"type": "Expression"
+											}
+										}
+									},
+									{
+										"name": "Set variable4",
+										"type": "SetVariable",
+										"dependsOn": [
+											{
+												"activity": "Set variable3",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "start_page",
+											"value": {
+												"value": "@variables('index_value')",
+												"type": "Expression"
+											}
+										}
+									},
+									{
+										"name": "Loop Copy Data",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "RestSource",
+												"httpRequestTimeout": "00:01:40",
+												"requestInterval": "00.00:00:00.010",
+												"requestMethod": "GET",
+												"additionalHeaders": {
+													"X-Billbee-Api-Key": "91364585-8561-4573-B322-F6E4F66FCCD4"
+												},
+												"paginationRules": {
+													"supportRFC5988": "true"
+												}
+											},
+											"sink": {
+												"type": "JsonSink",
+												"storeSettings": {
+													"type": "AzureBlobStorageWriteSettings"
+												},
+												"formatSettings": {
+													"type": "JsonWriteSettings"
+												}
+											},
+											"enableStaging": false
+										},
+										"inputs": [
+											{
+												"referenceName": "RestResource1",
+												"type": "DatasetReference",
+												"parameters": {
+													"queryParam": {
+														"value": "@concat('products?page=',string(variables('start_page')),'&pageSize=250')",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "Json1",
+												"type": "DatasetReference",
+												"parameters": {
+													"fileName": {
+														"value": "APIPage@{string(variables('start_page'))}.json",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "Set variable1",
+										"type": "SetVariable",
+										"dependsOn": [
+											{
+												"activity": "adf_json_to_csv",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "last_page",
+											"value": "true"
+										}
+									},
+									{
+										"name": "Final Copy Data",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "RestSource",
+												"httpRequestTimeout": "00:01:40",
+												"requestInterval": "00.00:00:00.010",
+												"requestMethod": "GET",
+												"additionalHeaders": {
+													"X-Billbee-Api-Key": "91364585-8561-4573-B322-F6E4F66FCCD4"
+												},
+												"paginationRules": {
+													"supportRFC5988": "true"
+												}
+											},
+											"sink": {
+												"type": "JsonSink",
+												"storeSettings": {
+													"type": "AzureBlobStorageWriteSettings"
+												},
+												"formatSettings": {
+													"type": "JsonWriteSettings"
+												}
+											},
+											"enableStaging": false
+										},
+										"inputs": [
+											{
+												"referenceName": "RestResource1",
+												"type": "DatasetReference",
+												"parameters": {
+													"queryParam": {
+														"value": "@concat('products?page=',string(variables('start_page')),'&pageSize=250')",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "Json1",
+												"type": "DatasetReference",
+												"parameters": {
+													"fileName": {
+														"value": "APIPage@{string(variables('start_page'))}.json",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									},
+									{
+										"name": "adf_json_to_csv",
+										"type": "DatabricksNotebook",
+										"dependsOn": [
+											{
+												"activity": "Final Copy Data",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"notebookPath": "/Users/ashishdudeja1994@gmail.com/adf_json_to_csv",
+											"baseParameters": {
+												"start_page_no": {
+													"value": "@string(add(length(activity('Get Metadata1').output.childItems),1))",
+													"type": "Expression"
+												},
+												"last_page_no": {
+													"value": "@variables('start_page')",
+													"type": "Expression"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "AzureDatabricksADF",
+											"type": "LinkedServiceReference"
+										}
+									}
+								]
+							}
+						}
+					],
+					"timeout": "0.3:00:00"
 				}
 			}
 		],

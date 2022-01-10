@@ -142,7 +142,7 @@
 							"type": "Fail",
 							"dependsOn": [
 								{
-									"activity": "last page -1 islastpage true set last_page to True",
+									"activity": "adf_partial_json_to_csv_copy",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -153,6 +153,107 @@
 								"message": "Last Page -1 was true",
 								"errorCode": "1"
 							}
+						},
+						{
+							"name": "adf_partial_json_to_csv_copy",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "Copy last page updated data to json again",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/ashishdudeja1994@gmail.com/adf_partial_json_to_csv",
+								"baseParameters": {
+									"last_page_no": {
+										"value": "@string(sub(int(string(variables('start_page'))),1))",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDatabricksADF",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Copy last page updated data to json again",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "last page -1 islastpage true set last_page to True",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "RestSource",
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010",
+									"requestMethod": "GET",
+									"additionalHeaders": {
+										"X-Billbee-Api-Key": "91364585-8561-4573-B322-F6E4F66FCCD4"
+									},
+									"paginationRules": {
+										"supportRFC5988": "true"
+									}
+								},
+								"sink": {
+									"type": "JsonSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "JsonWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "RestResource1",
+									"type": "DatasetReference",
+									"parameters": {
+										"queryParam": {
+											"value": "@concat('products?page=',string(sub(int(string(variables('start_page'))),1)),'&pageSize=250')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Json1",
+									"type": "DatasetReference",
+									"parameters": {
+										"fileName": {
+											"value": "APIPage@{string(sub(int(string(variables('start_page'))),1))}.json",
+											"type": "Expression"
+										}
+									}
+								}
+							]
 						}
 					]
 				}
@@ -336,7 +437,7 @@
 										"type": "SetVariable",
 										"dependsOn": [
 											{
-												"activity": "adf_json_to_csv",
+												"activity": "Final Copy Data",
 												"dependencyConditions": [
 													"Succeeded"
 												]
@@ -414,7 +515,7 @@
 										"type": "DatabricksNotebook",
 										"dependsOn": [
 											{
-												"activity": "Final Copy Data",
+												"activity": "Set variable1",
 												"dependencyConditions": [
 													"Succeeded"
 												]
